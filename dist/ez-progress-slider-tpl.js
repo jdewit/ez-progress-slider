@@ -1,0 +1,1 @@
+angular.module("ez.progressSlider").run(["$templateCache",function(a){"use strict";a.put("ez-progress-slider-tpl.html","<div class=progress-bar role=progressbar><a href=# class=progress-handle></a> <a href=# class=target-handle></a> <span class=progress-text></span></div>")}]);

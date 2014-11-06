@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--dependencies start -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+
+  <link href="dist/ez-progress-slider.min.css" rel="stylesheet"/>
+
+  <link href="//rawgit.com/jdewit/ez-dropdown/master/dist/ez-dropdown.min.css" rel="stylesheet"/>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+  <script src="//cdn.rawgit.com/taye/interact.js/master/interact.js"></script>
+  <script src="//rawgit.com/jdewit/ez-dropdown/master/dist/ez-dropdown.min.js"></script>
+  <!--dependencies end -->
+
+  <script src="src/ez-progress-slider.js"></script>
+  <script src="dist/ez-progress-slider-tpl.js"></script>
+
+  <script>
+    angular.module('myApp', ['ez.progressSlider', 'ez.dropdown'])
+
+    .controller('AppCtrl', ['$scope', function AppCtrl($scope) {
+
+        $scope.data = {
+          progress1: 60,
+          target1: 30,
+          progress2: 20
+        };
+
+    }])
+;
+
+  </script>
+</head>
+<body ng-app="myApp">
+  <div ng-controller="AppCtrl" class="container">
+    <div class="page-header">
+      <h1>ez-progress-slider</h1>
+    </div>
+    <div class="page-body">
+      <ez-progress-slider class="" data-progress="data.progress1" data-target="data.target1"></ez-progress-slider>
+      <hr>
+      <span class="dropdown" click-inside="true">
+        <a href="#" class="dropdown-toggle">
+          Slider inside dropdown without a target!
+        </a>
+        <div class="dropdown-menu dropdown-pointer pull-right" style="width: 200px; padding: 20px;">
+          <div ez-progress-slider class="progress-bar-success" data-progress="data.progress2"></div>
+        </div>
+      </span>
+
+    </div>
+  </div>
+</body>
+
+</html>
+

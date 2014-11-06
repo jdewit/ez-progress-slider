@@ -1,0 +1,49 @@
+.ez-progress-slider {
+  position: relative;
+  overflow: visible;
+  margin-bottom: 0;
+
+  .progress-bar {
+    text-align: left;
+    padding-left: 10px;
+  }
+
+  .progress-handle {
+    top: -2.5px;
+    left: 0;
+    position: absolute;
+    z-index: 2;
+    cursor: move;
+    background-color: #ddd;
+    width:25px;
+    height:25px;
+    border-radius: 12.5px;
+    border: 1px solid #ccc;
+		-webkit-transition: left 0.6s ease;
+		-moz-transition: left 0.6s ease;
+		-o-transition: left 0.6s ease;
+		transition: left 0.6s ease;
+  }
+
+  .target-handle {
+    width: 10px;
+    height: 40px;
+    background-color: #a5d1e8;
+    cursor: move;
+    position: absolute;
+    top: -10px;
+    left: 0;
+    z-index: 1;
+    border: 1px solid #ccc;
+  }
+
+  &.ez-loaded {
+    .progress-bar, .progress-handle {
+      -webkit-transition: none !important;
+      -moz-transition: none !important;
+      -o-transition: none !important;
+      transition: none !important;
+    }
+  }
+
+}
