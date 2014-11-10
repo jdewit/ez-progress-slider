@@ -24,11 +24,15 @@ angular.module('ez.progressSlider', [])
       var targetHandle = progressEl.children[1];
       var textEl = progressEl.children[2];
       var totalWidth = $element.parent().innerWidth();
-      var progressPercent = scope.progress;
+      var progressPercent = parseInt(scope.progress, 10);
       var hasTarget = scope.hasOwnProperty('target');
 
       var getPercentInPixels = function(percent) {
-        return parseInt((percent * totalWidth / 100).toFixed(0), 10);
+        if (percent) {
+          return parseInt((percent * totalWidth / 100).toFixed(0), 10);
+        } else {
+          return 0;
+        }
       };
 
       // progress drag handle start
@@ -79,7 +83,7 @@ angular.module('ez.progressSlider', [])
       // target drag handle start
       if (hasTarget) {
         var targetPercent = scope.target;
-        var targetX = getPercentInPixels(targetPercent);
+        var targetX = parseInt(getPercentInPixels(targetPercent), 10);
 
         var setTarget = function() {
           targetHandle.style.left = (targetX - 6) + 'px';
