@@ -2,7 +2,7 @@
   "name": "ez-progress-slider",
   "description": "Angular bootstrap progress slider directive",
   "keywords": [],
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Joris de Wit",
   "repository": {
     "type": "git",
