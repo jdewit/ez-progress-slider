@@ -19,11 +19,11 @@ angular.module('ez.progressSlider', [])
 
       scope.options = angular.extend({}, EzProgressSliderConfig, scope.config);
 
+      var totalWidth;
       var progressEl = $element[0];
       var progressHandle = progressEl.children[0];
       var targetHandle = progressEl.children[1];
       var textEl = progressEl.children[2];
-      var totalWidth = $element.parent().innerWidth();
       var progressPercent = parseInt(scope.progress, 10);
       var hasTarget = scope.hasOwnProperty('target');
 
@@ -55,6 +55,7 @@ angular.module('ez.progressSlider', [])
       interact(progressHandle).draggable({
         axis: 'x',
         onstart: function(e) {
+          totalWidth = $element.parent().innerWidth();
           progressX = getPercentInPixels(progressPercent);
         },
         onmove: function(e) {
