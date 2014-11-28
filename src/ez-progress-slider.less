@@ -3,6 +3,7 @@
   overflow: visible;
   margin-bottom: 0;
   display: block;
+  cursor: pointer;
 
   .progress-bar {
     text-align: left;
@@ -14,7 +15,6 @@
     left: 0;
     position: absolute;
     z-index: 2;
-    cursor: move;
     background-color: #ddd;
     width:25px;
     height:25px;
@@ -24,18 +24,25 @@
 		-moz-transition: left 0.6s ease;
 		-o-transition: left 0.6s ease;
 		transition: left 0.6s ease;
+
+    &.ez-draggable {
+      cursor: move;
+    }
   }
 
   .target-handle {
     width: 10px;
     height: 40px;
     background-color: #a5d1e8;
-    cursor: move;
     position: absolute;
     top: -10px;
     left: 0;
     z-index: 1;
     border: 1px solid #ccc;
+
+    &.ez-draggable {
+      cursor: move;
+    }
   }
 
   &.ez-loaded {

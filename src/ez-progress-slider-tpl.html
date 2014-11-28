@@ -1,5 +1,5 @@
 <div class="progress-bar" role="progressbar">
-  <span class="progress-handle"></span>
-  <span class="target-handle"></span>
+  <span class="progress-handle" ng-class="{'ez-draggable': options.draggableProgress}"></span>
+  <span class="target-handle" ng-class="{'ez-draggable': options.draggableTarget}" ng-show="hasTarget"></span>
   <span class="progress-text"></span>
 </div>
