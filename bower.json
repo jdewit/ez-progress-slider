@@ -1,9 +1,9 @@
 {
   "name": "ez-progress-slider",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "devDependencies": {
     "angular-mocks": "1.2.*",
-    "ez-dropdown": "~0.0.1"
+    "ez-dropdown": "0.0.*"
   },
   "dependencies": {
     "jquery": "*",
