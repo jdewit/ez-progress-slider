@@ -67,6 +67,13 @@ angular.module('ez.progressSlider', [])
         progressHandle.style.left = (progressX - 10) + 'px';
         textEl.innerHTML = Math.round(scope.progress) + '%';
 
+        if (scope.progress <= 50) {
+          $progressSliderEl.addClass('under-50');
+        } else {
+          $progressSliderEl.removeClass('under-50');
+        }
+
+        placeText();
         updateBar();
       };
 
@@ -80,6 +87,16 @@ angular.module('ez.progressSlider', [])
         }
       };
 
+      var placeText = function() {
+        if (progressX < 35) {
+          textEl.style.left = (progressX + 20) + 'px';
+          textEl.style.color = '#333';
+        } else {
+          textEl.style.left = '5px';
+          textEl.style.color = '#fff';
+        }
+      };
+
       if (scope.options.draggableProgress) {
         $progressSliderEl.addClass('draggable-progress');
 
@@ -90,6 +107,8 @@ angular.module('ez.progressSlider', [])
           },
           onmove: function(e) {
             progressX = progressX + e.dx;
+
+            placeText();
 
             if (progressX < 0 || progressX > totalWidth) {
               progressX = progressX - e.dx;
