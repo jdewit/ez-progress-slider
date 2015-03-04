@@ -13,14 +13,21 @@ angular.module('ez.progressSlider', [])
     scope: {
       progress: '=',
       target: '=?',
-      config: '=?',
-      onChange: '=?'
+      config: '=?'
     },
-    link: function(scope, $element) {
+    link: function(scope, $element, attrs) {
       $element.wrap('<div class="ez-progress-slider progress"></div>');
 
       scope.options = angular.extend({}, EzProgressSliderConfig, scope.config);
-      scope.hasTarget = scope.hasOwnProperty('target');
+      scope.hasTarget = !!attrs.target;
+
+      if (!!attrs.draggableProgress) {
+        scope.options.draggableProgress = $parse(attrs.draggableProgress)(scope.$parent);
+      }
+
+      if (!!attrs.draggableTarget) {
+        scope.options.draggableTarget = $parse(attrs.draggableTarget)(scope.$parent);
+      }
 
       var totalWidth;
       var progressEl = $element[0];
@@ -58,7 +65,7 @@ angular.module('ez.progressSlider', [])
       // progress drag handle start
       var progressX = getPercentInPixels(scope.progress);
 
-      var setProgress = function() {
+      var setProgress = function(apply) {
         if (totalWidth <= 0) {
           return;
         }
@@ -75,6 +82,15 @@ angular.module('ez.progressSlider', [])
 
         placeText();
         updateBar();
+
+        if (apply) {
+          scope.$apply();
+
+          if (!!attrs.onChange) {
+            $parse(attrs.onChange)(scope.$parent, {progress: scope.progress, target: scope.target});
+            scope.$apply();
+          }
+        }
       };
 
       var updateBar = function() {
@@ -120,10 +136,8 @@ angular.module('ez.progressSlider', [])
             setProgress();
           },
           onend: function() {
-            scope.$apply();
+            setProgress(true);
           }
-        }).actionChecker(function(e, action) {
-          return (e.which === 3) ? null: action; // disable right click
         });
 
         // handle clicking on slider
@@ -132,25 +146,31 @@ angular.module('ez.progressSlider', [])
           if ($target.hasClass('ez-progress-slider') || $target.hasClass('progress-bar')) {
             progressX = e.offsetX;
 
-            scope.$apply(function() {
-              scope.progress = getPercent(progressX, totalWidth);
-            });
+            scope.progress = getPercent(progressX, totalWidth);
+
+            setProgress(true);
           }
         });
 
       }
 
-      // progress drag handle end
-
-      // target drag handle start
       if (scope.hasTarget) {
-        var targetX;
+        var targetX = getPercentInPixels(scope.target);
 
-        var setTarget = function() {
+        var setTarget = function(apply) {
           targetHandle.style.left = (targetX - 6) + 'px';
           targetHandle.setAttribute('title', scope.target + '%');
 
           updateBar();
+
+          if (apply) {
+            scope.$apply();
+
+            if (!!attrs.onChange) {
+              $parse(attrs.onChange)(scope.$parent, {progress: scope.progress, target: scope.target});
+              scope.$apply();
+            }
+          }
         };
 
         if (scope.options.draggableTarget) {
@@ -174,57 +194,21 @@ angular.module('ez.progressSlider', [])
               setTarget();
             },
             onend: function() {
-              scope.$apply();
+              setTarget(true);
             }
-          }).actionChecker(function(e, action) {
-            return (e.which === 3) ? null: action; // disable right click
           });
         }
 
-        scope.$watch('target', function(newVal, oldVal) {
-          newVal = parseInt(newVal, 10);
+        // init target
+        setTarget();
 
-          if (newVal > 100) {
-            return scope.target = 100;
-          }
-
-          if (newVal < 0) {
-            return scope.target = 0;
-          }
-
-          targetX = getPercentInPixels(newVal);
-
-          setTarget();
-
-          if (newVal !== oldVal && typeof scope.onChange === 'function') {
-            scope.onChange();
-          }
-        });
       } else {
         targetHandle.remove();
       }
 
-      // target drag handle end
 
-      scope.$watch('progress', function(newVal, oldVal) {
-        newVal = parseInt(newVal, 10);
-
-        if (newVal > 100) {
-          return scope.progress = 100;
-        }
-
-        if (newVal < 0) {
-          return scope.progress = 0;
-        }
-
-        progressX = getPercentInPixels(newVal);
-
-        setProgress();
-
-        if (newVal !== oldVal && typeof scope.onChange === 'function') {
-          scope.onChange();
-        }
-      });
+      // init progress
+      setProgress();
 
       // disable transitions after progress has loaded
       setTimeout(function() {
