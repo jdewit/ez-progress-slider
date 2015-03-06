@@ -1,5 +1,5 @@
 <div class="progress-bar" role="progressbar">
-  <span class="progress-handle"></span>
-  <span class="target-handle" ng-show="hasTarget"></span>
+  <span class="progress-handle" ng-show="options.showProgressHandle && !options.readonly"></span>
+  <span class="target-handle" ng-show="options.showTargetHandle"></span>
   <span class="progress-text"></span>
 </div>
