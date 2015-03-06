@@ -5,7 +5,7 @@ angular.module('ez.progressSlider', [])
   draggableProgress: true,
   showProgressHandle: true,
   showTargetHandle: true,
-  readonly: false
+  noInteraction: false
 })
 
 .directive('ezProgressSlider', ['$parse', 'EzProgressSliderConfig', function($parse, EzProgressSliderConfig) {
@@ -27,6 +27,7 @@ angular.module('ez.progressSlider', [])
       for (var option in EzProgressSliderConfig) {
         if (!!attrs[option]) {
           scope.options[option] = $parse(attrs[option])(scope.$parent);
+          console.log(scope.options[option]);
         }
       }
 
@@ -105,7 +106,7 @@ angular.module('ez.progressSlider', [])
         }
       };
 
-      if (scope.options.draggableProgress && !scope.options.readonly) {
+      if (scope.options.draggableProgress && !scope.options.noInteraction) {
         $progressSliderEl.addClass('draggable-progress');
 
         interact(progressHandle).draggable({
