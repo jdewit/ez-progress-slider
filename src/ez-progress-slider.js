@@ -27,7 +27,6 @@ angular.module('ez.progressSlider', [])
       for (var option in EzProgressSliderConfig) {
         if (!!attrs[option]) {
           scope.options[option] = $parse(attrs[option])(scope.$parent);
-          console.log(scope.options[option]);
         }
       }
 
@@ -64,7 +63,6 @@ angular.module('ez.progressSlider', [])
         }
       };
 
-
       var setProgress = function(fromX) {
         if (totalWidth <= 0) {
           return;
@@ -98,7 +96,12 @@ angular.module('ez.progressSlider', [])
 
       var placeText = function() {
         if (progressX < 35) {
-          textEl.style.left = (progressX + 20) + 'px';
+          if (scope.options.noInteraction) {
+            textEl.style.left = (progressX + 5) + 'px';
+          } else {
+            textEl.style.left = (progressX + 20) + 'px';
+          }
+
           textEl.style.color = '#333';
         } else {
           textEl.style.left = '5px';
@@ -150,7 +153,6 @@ angular.module('ez.progressSlider', [])
             scope.$apply();
           }
         });
-
       }
 
       if (scope.hasTarget) {
