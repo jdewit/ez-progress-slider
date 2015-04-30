@@ -27,7 +27,8 @@
           progress1: 60,
           target1: 30,
           progress2: 20,
-          progress3: 80,
+          progress3: 20,
+          target3: 40,
           readonly: true
         };
 
@@ -47,14 +48,20 @@
       <h1>ez-progress-slider</h1>
     </div>
     <div class="page-body">
-      <ez-progress-slider class="" progress="data.progress1" on-change="progressUpdated" target="data.target1" config="{draggableTarget: true}"></ez-progress-slider>
-      <br>
-      <label>Progress:</label>
-      <input type="text" ng-model="data.progress1"/>
+      <form name="_form">
+        <ez-progress-slider class="" ng-model="data.progress1" on-change="progressUpdated" target="data.target1" config="{draggableTarget: true}"></ez-progress-slider>
+        <br>
+        <label>Progress:</label>
+        <input type="text" ng-model="data.progress1"/>
 
-      <br>
-      <label>Target:</label>
-      <input type="text" ng-model="data.target1"/>
+        <br>
+        <label>Target:</label>
+        <input type="text" ng-model="data.target1"/>
+
+        <br>
+        <label>Dirty?:</label>
+        {{ _form.$dirty }}
+      </form>
 
       <hr>
       <span class="dropdown" click-inside="true">
@@ -62,14 +69,14 @@
           Slider inside dropdown without a target!
         </a>
         <div class="dropdown-menu dropdown-pointer pull-right" style="width: 200px; padding: 20px;">
-          <div ez-progress-slider class="progress-bar-success" progress="data.progress2"></div>
+          <div ez-progress-slider class="progress-bar-success" ng-model="data.progress2"></div>
         </div>
       </span>
 
       <hr>
 
       Read only progress slider
-      <ez-progress-slider class="" progress="data.progress3" target="data.target1" no-interaction="{{ data.readonly }}"></ez-progress-slider>
+      <ez-progress-slider class="" ng-model="data.progress3" target="data.target3" no-interaction="{{ data.readonly }}"></ez-progress-slider>
       <hr>
       {{ log }}
 
