@@ -224,7 +224,6 @@ angular.module('ez.progressSlider', [])
       }
 
       ngModel.$render = function() {
-        console.log('render', ngModel.$viewValue);
         progress = parseInt(ngModel.$viewValue, 10) || 0;
 
         if (progress > 100) {
@@ -237,32 +236,6 @@ angular.module('ez.progressSlider', [])
 
         setProgress();
       };
-
-      //scope.$watch('progress', function(newVal, oldVal) {
-        //if (newVal === oldVal) {
-          //return;
-        //}
-
-        //progress = parseInt(newVal, 10) || 0;
-
-        //if (progress > 100) {
-          //scope.progress = 100;
-
-          //return;
-        //} else if (progress < 0) {
-          //scope.progress = 0;
-
-          //return;
-        //}
-
-        //if (!!attrs.onChange) {
-          //$parse(attrs.onChange)(scope.$parent, {progress: progress, target: target});
-        //}
-
-        //progressX = getPercentInPixels(progress);
-
-        //setProgress();
-      //});
 
       // init
       var progress = 0;
