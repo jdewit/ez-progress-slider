@@ -4,8 +4,7 @@ angular.module('ez.progressSlider', [])
   draggableTarget: false,
   draggableProgress: true,
   showProgressHandle: true,
-  showTargetHandle: true,
-  noInteraction: false
+  showTargetHandle: true
 })
 
 .directive('ezProgressSlider', ['$parse', 'EzProgressSliderConfig', function($parse, EzProgressSliderConfig) {
@@ -15,6 +14,7 @@ angular.module('ez.progressSlider', [])
     replace: true,
     require: 'ngModel',
     scope: {
+      disabled: '=?ngDisabled',
       target: '=?',
       config: '=?'
     },
@@ -35,6 +35,14 @@ angular.module('ez.progressSlider', [])
       var $progressHandle = $element.find('.progress-handle');
       var $targetHandle = $element.find('.target-handle');
       var $textEl = $element.find('.progress-text');
+      var progress;
+      var progressX;
+      var target;
+      var targetX;
+      var progressInteract;
+      var progressClickHandler;
+      var targetInteract;
+      var targetWatcher;
 
       $progressBarEl.height($progressEl.height());
 
@@ -96,7 +104,7 @@ angular.module('ez.progressSlider', [])
 
       var placeText = function() {
         if (progressX < 35) {
-          if (scope.options.noInteraction) {
+          if (scope.disabled) {
             $textEl.css({left: (progressX + 5) + 'px'});
           } else {
             $textEl.css({left: (progressX + 20) + 'px'});
@@ -108,70 +116,102 @@ angular.module('ez.progressSlider', [])
         }
       };
 
-      if (scope.options.draggableProgress && !scope.options.noInteraction) {
-        $element.addClass('draggable-progress');
+      var setTarget = function() {
+        $targetHandle.css({left: getPercentInPixels(target) + 'px'});
+        $targetHandle.attr('title', target + '%');
 
-        interact($progressHandle[0]).draggable({
-          axis: 'x',
-          onstart: function() {
-            progressX = getPercentInPixels(progress);
-          },
-          onmove: function(e) {
-            progressX = progressX + e.dx;
+        updateBar();
+      };
 
-            placeText();
+      var initProgress = function() {
+        progress = 0;
+        progressX = getPercentInPixels(progress);
+        setProgress();
+      };
 
-            if (progressX < 0 || progressX > totalWidth) {
-              progressX = progressX - e.dx;
-              return;
+      var initTarget = function() {
+        targetWatcher = scope.$watch('target', function(newVal, oldVal) {
+          if (newVal === oldVal) {
+            return;
+          }
+
+          target = parseInt(newVal, 10) || 0;
+
+          if (target > 100) {
+            target = 100;
+          } else if (target < 0) {
+            target = 0;
+          }
+
+          setTarget();
+        });
+
+        target = scope.target;
+        targetX = getPercentInPixels(target);
+        setTarget();
+      };
+
+      var applyInteractions = function() {
+        $element.removeClass('ez-disabled');
+
+        if (scope.disabled) {
+          return;
+        }
+
+        if (scope.options.draggableProgress) {
+          $element.addClass('draggable-progress');
+
+          progressInteract = interact($progressHandle[0]).draggable({
+            axis: 'x',
+            onstart: function() {
+              progressX = getPercentInPixels(progress);
+            },
+            onmove: function(e) {
+              progressX = progressX + e.dx;
+
+              placeText();
+
+              if (progressX < 0 || progressX > totalWidth) {
+                progressX = progressX - e.dx;
+                return;
+              }
+
+              progress = getPercent(progressX, totalWidth);
+
+              setProgress();
+            },
+            onend: function() {
+              setProgress();
+
+              ngModel.$setViewValue(progress);
+
+              scope.$apply();
             }
+          });
+
+          progressClickHandler = function(e) {
+            var $target = angular.element(e.target);
+
+            progressX = e.offsetX;
 
             progress = getPercent(progressX, totalWidth);
 
-            setProgress();
-          },
-          onend: function() {
             setProgress();
 
             ngModel.$setViewValue(progress);
 
             scope.$apply();
-          }
-        });
+          };
 
-        var clickHandler = function(e) {
-          var $target = angular.element(e.target);
+          $progressEl.on('mousedown', progressClickHandler);
 
-          progressX = e.offsetX;
+          $progressBarEl.on('mousedown', progressClickHandler);
+        }
 
-          progress = getPercent(progressX, totalWidth);
-
-          setProgress();
-
-          ngModel.$setViewValue(progress);
-
-          scope.$apply();
-        };
-
-        $progressEl.on('mousedown', clickHandler);
-
-        $progressBarEl.on('mousedown', clickHandler);
-      }
-
-      if (scope.hasTarget) {
-
-        var setTarget = function() {
-
-          $targetHandle.css({left: getPercentInPixels(target) + 'px'});
-          $targetHandle.attr('title', target + '%');
-
-          updateBar();
-        };
-
-        if (scope.options.draggableTarget) {
+        if (scope.hasTarget && scope.options.draggableTarget) {
           $element.addClass('draggable-target');
 
-          interact($targetHandle[0]).draggable({
+          targetInteract = interact($targetHandle[0]).draggable({
             axis: 'x',
             onstart: function() {
               targetX = getPercentInPixels(scope.target);
@@ -197,31 +237,30 @@ angular.module('ez.progressSlider', [])
             }
           });
         }
+      };
 
-        scope.$watch('target', function(newVal, oldVal) {
-          if (newVal === oldVal) {
-            return;
-          }
+      var disable = function() {
+        $element.removeClass('draggable-progress');
+        $element.addClass('ez-disabled');
 
-          target = parseInt(newVal, 10) || 0;
+        if (!!progressInteract) {
+          progressInteract.unset();
+          progressInteract = null;
 
-          if (target > 100) {
-            target = 100;
-          } else if (target < 0) {
-            target = 0;
-          }
+          $progressEl.off('mousedown', progressClickHandler);
 
-          setTarget();
-        });
+          $progressBarEl.off('mousedown', progressClickHandler);
+        }
 
-        // init
-        var target = scope.target;
-        var targetX = getPercentInPixels(target);
-        setTarget();
+        if (!!targetInteract) {
+          $element.addClass('draggable-target');
 
-      } else {
-        scope.options.showTargetHandle = false;
-      }
+          targetInteract.unset();
+          targetInteract = null;
+
+          targetWatcher();
+        }
+      };
 
       ngModel.$render = function() {
         progress = parseInt(ngModel.$viewValue, 10) || 0;
@@ -237,15 +276,30 @@ angular.module('ez.progressSlider', [])
         setProgress();
       };
 
-      // init
-      var progress = 0;
-      var progressX = getPercentInPixels(progress);
-      setProgress();
+      scope.$watch('disabled', function(n, o) {
+        if (n !== o) {
+          if (n) {
+            disable();
+          } else {
+            applyInteractions();
+          }
+        }
+      });
+
+      initProgress();
+      initTarget();
+
+      if (!scope.disabled) {
+        applyInteractions();
+      } else {
+        $element.addClass('ez-disabled');
+      }
 
       // disable transitions after progress has loaded
       setTimeout(function() {
         $element.addClass('ez-loaded');
       }, 1000);
+
     }
   };
 }])

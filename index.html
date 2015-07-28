@@ -76,7 +76,8 @@
       <hr>
 
       Read only progress slider
-      <ez-progress-slider class="" ng-model="data.progress3" target="data.target3" no-interaction="{{ data.readonly }}"></ez-progress-slider>
+      <ez-progress-slider class="" ng-model="data.progress3" target="data.target3" ng-disabled="data.readonly"></ez-progress-slider>
+      <a class="btn btn-default" ng-click="data.readonly = !data.readonly">Toggle Read Only</a>
       <hr>
       {{ log }}
 
