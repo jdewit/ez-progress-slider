@@ -4,7 +4,8 @@ angular.module('ez.progressSlider', [])
   draggableTarget: false,
   draggableProgress: true,
   showProgressHandle: true,
-  showTargetHandle: true
+  showTargetHandle: true,
+  inverseProgress: false
 })
 
 .directive('ezProgressSlider', ['$parse', 'EzProgressSliderConfig', function($parse, EzProgressSliderConfig) {
@@ -16,7 +17,8 @@ angular.module('ez.progressSlider', [])
     scope: {
       disabled: '=?ngDisabled',
       target: '=?',
-      config: '=?'
+      config: '=?',
+      delay: '=?' // render slider after a delay usefull if parent container transitions and has no width ie a modal
     },
     link: function(scope, $element, attrs, ngModel) {
       scope.options = angular.extend({}, EzProgressSliderConfig, scope.config);
@@ -43,10 +45,12 @@ angular.module('ez.progressSlider', [])
       var progressClickHandler;
       var targetInteract;
       var targetWatcher;
+      var delay = parseInt(scope.delay) || 0;
 
       $progressBarEl.height($progressEl.height());
 
       var setWidth = function() {
+        console.log('w', $progressSliderContainerEl.width());
         totalWidth = $progressSliderContainerEl.width();
       };
 
@@ -64,6 +68,7 @@ angular.module('ez.progressSlider', [])
       var getPercentInPixels = function(percent) {
         setWidth();
 
+        console.log('gett', percent);
         if (percent) {
           return parseInt((percent * totalWidth / 100).toFixed(0), 10);
         } else {
@@ -71,7 +76,7 @@ angular.module('ez.progressSlider', [])
         }
       };
 
-      var setProgress = function(fromX) {
+      var setProgress = function() {
         if (totalWidth <= 0) {
           return;
         }
@@ -93,8 +98,18 @@ angular.module('ez.progressSlider', [])
       };
 
       var updateBar = function() {
+        var isBehind = false;
+
         if (scope.hasTarget) {
           if (progress < target) {
+            isBehind = true;
+          }
+
+          if (scope.options.inverseProgress) {
+            isBehind = !isBehind;
+          }
+
+          if (isBehind) {
             $element.addClass('behind-target');
           } else {
             $element.removeClass('behind-target');
@@ -124,8 +139,10 @@ angular.module('ez.progressSlider', [])
       };
 
       var initProgress = function() {
+        console.log('initP', progress);
         progress = 0;
         progressX = getPercentInPixels(progress);
+        console.log('x,', progressX);
         setProgress();
       };
 
@@ -286,20 +303,29 @@ angular.module('ez.progressSlider', [])
         }
       });
 
-      initProgress();
-      initTarget();
+      function init() {
+        initProgress();
+        initTarget();
 
-      if (!scope.disabled) {
-        applyInteractions();
-      } else {
-        $element.addClass('ez-disabled');
+        if (!scope.disabled) {
+          applyInteractions();
+        } else {
+          $element.addClass('ez-disabled');
+        }
+
+        // disable transitions after progress has loaded
+        setTimeout(function() {
+          $element.addClass('ez-loaded');
+        }, 1000);
+
+        if (delay > 0) {
+          setTimeout(function() {
+            ngModel.$render();
+          }, delay);
+        }
       }
 
-      // disable transitions after progress has loaded
-      setTimeout(function() {
-        $element.addClass('ez-loaded');
-      }, 1000);
-
+      init();
     }
   };
 }])

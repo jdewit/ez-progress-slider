@@ -13,15 +13,20 @@
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
   <script src="//cdn.rawgit.com/taye/interact.js/master/interact.js"></script>
   <script src="//rawgit.com/jdewit/ez-dropdown/master/dist/ez-dropdown.min.js"></script>
+
   <!--dependencies end -->
+
+  <script src="https://rawgit.com/jdewit/ez-transition/master/dist/ez-transition.min.js"></script>
+  <script src="https://rawgit.com/jdewit/ez-modal/master/dist/ez-modal.min.js"></script>
+  <script src="https://rawgit.com/jdewit/ez-modal/master/dist/ez-modal-tpl.min.js"></script>
 
   <script src="src/ez-progress-slider.js"></script>
   <script src="dist/ez-progress-slider-tpl.js"></script>
 
   <script>
-    angular.module('myApp', ['ez.progressSlider', 'ez.dropdown'])
+    angular.module('myApp', ['ez.progressSlider', 'ez.dropdown', 'ez.modal'])
 
-    .controller('AppCtrl', ['$scope', function AppCtrl($scope) {
+    .controller('AppCtrl', ['$scope', '$modal', function AppCtrl($scope, $modal) {
 
         $scope.data = {
           progress1: 60,
@@ -34,10 +39,23 @@
 
         $scope.log = [];
 
+        $scope.openModal = function() {
+
+          $modal.open({
+            templateUrl: 'modal.html',
+            controller: 'ModalCtrl'
+          });
+        };
+
         $scope.progressUpdated = function() {
-        $scope.log.push('progress updated => ' + $scope.data.progress1 + ' / ' + $scope.data.target1);
+          $scope.log.push('progress updated => ' + $scope.data.progress1 + ' / ' + $scope.data.target1);
         };
     }])
+    .controller('ModalCtrl', function($scope) {
+      $scope.data = {
+        progress4: 14
+      };
+    });
 ;
 
   </script>
@@ -78,7 +96,25 @@
       Read only progress slider
       <ez-progress-slider class="" ng-model="data.progress3" target="data.target3" ng-disabled="data.readonly"></ez-progress-slider>
       <a class="btn btn-default" ng-click="data.readonly = !data.readonly">Toggle Read Only</a>
+
       <hr>
+
+      <a class="btn btn-default" ng-click="openModal()">Modal Progress</a>
+
+      <script type="text/ng-template" id="modal.html">
+          <div class="modal-header">
+            <h3 class="modal-title">Progress in a modal</h3>
+          </div>
+          <div class="modal-body">
+            <div ez-progress-slider ng-model="data.progress4" delay="300"></div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default" ng-click="$dismiss()">Close</a>
+          </div>
+      </script>
+
+      <hr>
+
       {{ log }}
 
     </div>
