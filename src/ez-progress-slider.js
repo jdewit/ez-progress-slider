@@ -50,7 +50,6 @@ angular.module('ez.progressSlider', [])
       $progressBarEl.height($progressEl.height());
 
       var setWidth = function() {
-        console.log('w', $progressSliderContainerEl.width());
         totalWidth = $progressSliderContainerEl.width();
       };
 
@@ -68,7 +67,6 @@ angular.module('ez.progressSlider', [])
       var getPercentInPixels = function(percent) {
         setWidth();
 
-        console.log('gett', percent);
         if (percent) {
           return parseInt((percent * totalWidth / 100).toFixed(0), 10);
         } else {
@@ -139,10 +137,8 @@ angular.module('ez.progressSlider', [])
       };
 
       var initProgress = function() {
-        console.log('initP', progress);
         progress = 0;
         progressX = getPercentInPixels(progress);
-        console.log('x,', progressX);
         setProgress();
       };
 
